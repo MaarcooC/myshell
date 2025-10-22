@@ -8,6 +8,7 @@ typedef struct {
 } BuiltInCommand;
 
 void cmd_cd(char **args);
+void cmd_version(char **args);
 int execute_builtin(char **args);
 
 #endif

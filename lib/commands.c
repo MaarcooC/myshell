@@ -5,6 +5,9 @@
 #include <sys/wait.h>
 #include "commands.h"
 
+#define VERSION "1.0.1"
+#define AUTHOR "Marco"
+
 // function to handle cd built-in command
 void cmd_cd(char **args) {
     if (args[1] == NULL) {
@@ -16,8 +19,13 @@ void cmd_cd(char **args) {
     }
 }
 
+void cmd_version (char **argsid) {
+    printf("version: %s author: %s\n", VERSION, AUTHOR);
+}
+
 BuiltInCommand builtins[] = {
     {"cd", cmd_cd},
+    {"version", cmd_version},
     {NULL, NULL} // Sentinel
 };
 
