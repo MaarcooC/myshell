@@ -4,16 +4,22 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "lib/commands.h"
+#include "lib/support.h"
 
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
+
+void printF1 (void);
 
 int main() {
     char input[MAX_INPUT];
     char *args[MAX_ARGS];
 
+    // prints f1 car in terminal
+    printF1();
+
     // welcome message
-    printf("Welcome. Type ex to exit\n");
+    printf("\n\nWelcome. Type ex to exit\n");
     
     while (1) {
         printf("myshell# ");
@@ -22,6 +28,8 @@ int main() {
         if (!fgets(input, sizeof(input), stdin)) break;
         input[strcspn(input, "\n")] = 0; // removes \n
         
+        string_tolower(input);
+
         if (strcmp(input, "ex") == 0) break;
 
         // split input by spaces

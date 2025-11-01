@@ -1,5 +1,5 @@
-#ifndef BUILTIN_H
-#define BUILTIN_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
 // Built-in command structure
 typedef struct {

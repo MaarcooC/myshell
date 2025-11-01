@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Source files
-# myshell.c + tutti i .c dentro lib/
+# myshell.c + every .c file
 SRCS = myshell.c $(wildcard lib/*.c)
 OBJS = $(SRCS:.c=.o)
 TARGET = myshell
