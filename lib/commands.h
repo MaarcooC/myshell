@@ -12,5 +12,7 @@ void cmd_version(char **args);
 int execute_builtin(char **args);
 void cmd_help (char **args);
 void cmd_update(char **args);
+void cmd_hide (char **args);
+void cmd_unhide (char **args);
 
 #endif

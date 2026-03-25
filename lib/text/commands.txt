@@ -1,0 +1,8 @@
+
+HELP CENTER BUILT-IN COMMANDS:
+- help: shows custom commands
+- ex: exit cmd
+- version: shows current myshell version
+- up: executes update and upgrade with -y appendix
+- hide: hides current directory from prompt
+- unhide: shows current directory to prompt

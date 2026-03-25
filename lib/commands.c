@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "commands.h"
+#include "globals.h"
+#include "support.h"
 
-#define VERSION "1.0.3"
-#define AUTHOR "Marco"
+extern bool hide_path; // flag to hide path in prompt
 
 // function to handle cd built-in command
 void cmd_cd(char **args) {
@@ -21,7 +22,7 @@ void cmd_cd(char **args) {
 
 // method to show myshell version
 void cmd_version (char **argsid) {
-    printf("version: %s author: %s\n", VERSION, AUTHOR);
+    printf("version: %s author: %s\nGITHUB: %s\n", VERSION, AUTHOR, GITHUB);
 }
 
 // method to read commands from file and print them on cmd
@@ -29,7 +30,7 @@ void cmd_help (char **args) {
     FILE *f;
 
     // checks file opening
-    if ((f = fopen("lib/commands.txt", "r")) == NULL) {
+    if ((f = fopen("lib/text/commands.txt", "r")) == NULL) {
         printf("Error while opening commands file index\n");
         return;
     } else {
@@ -62,11 +63,23 @@ void cmd_update(char **args) {
     }
 }
 
+// sets a flag to hide the current working directory in the prompt
+void cmd_hide (char **args) {
+    hide_path = true;
+}
+
+// sets a flag to show the current working directory in the prompt
+void cmd_unhide (char **args) {
+    hide_path = false;
+}
+
 BuiltInCommand builtins[] = {
     {"cd", cmd_cd},
     {"version", cmd_version},
     {"help", cmd_help},
     {"up", cmd_update},
+    {"hide", cmd_hide},
+    {"unhide", cmd_unhide}, // unhide is the same as hide, it just sets the flag to false
     {NULL, NULL} // Sentinel
 };
 

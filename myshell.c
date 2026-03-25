@@ -5,15 +5,14 @@
 #include <sys/wait.h>
 #include "lib/commands.h"
 #include "lib/support.h"
+#include "lib/globals.h"
 
-#define MAX_INPUT 1024
-#define MAX_ARGS 64
-
-void printF1 (void);
+bool hide_path = false; // flag to hide path in prompt
 
 int main() {
     char input[MAX_INPUT];
     char *args[MAX_ARGS];
+    char *user = getenv("USER"); // user username
 
     // prints f1 car in terminal
     printF1();
@@ -22,8 +21,8 @@ int main() {
     printf("\n\nWelcome. Type ex to exit\n");
     
     while (1) {
-        printf("myshell# ");
-        fflush(stdout);
+
+        print_prompt(user, hide_path); // prints prompt with username and dir
 
         if (!fgets(input, sizeof(input), stdin)) break;
         input[strcspn(input, "\n")] = 0; // removes \n

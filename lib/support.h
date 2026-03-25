@@ -3,5 +3,6 @@
 
 void printF1 (void);
 char* string_tolower (char *input);
+void print_prompt(char* user, bool hide_path);
 
 #endif

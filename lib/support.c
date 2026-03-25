@@ -5,12 +5,13 @@
 #include <sys/wait.h>
 #include <ctype.h>
 #include "support.h"
+#include "globals.h"
 
 // function to print f1 car form file
 void printF1 (void) {
     FILE *f;
 
-    if ((f = fopen("f1.txt", "r")) == NULL ) {
+    if ((f = fopen("lib/text/f1.txt", "r")) == NULL ) {
         printf("Error opening file\n");
     } else {
         char c;
@@ -30,4 +31,20 @@ char* string_tolower (char *input) {
     }
 
     return input;
+}
+
+// function to print the prompt with username and current working directory
+void print_prompt(char* user, bool hide_path) {
+    printf("[%s@myshell", user);
+    char cwd[1024];
+
+    // Get the current working directory and print it in the prompt
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        if (hide_path) printf("]# ");
+        else printf(" ~%s]# ", cwd);
+    } else {
+        perror("getcwd() error");
+    }
+
+    fflush(stdout);
 }
