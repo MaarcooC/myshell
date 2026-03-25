@@ -6,11 +6,13 @@
 #include "lib/commands.h"
 #include "lib/support.h"
 #include "lib/globals.h"
+#include "lib/linenoise.h"
+#include <unistd.h>
+#include <termios.h>
 
 bool hide_path = false; // flag to hide path in prompt
 
 int main() {
-    char input[MAX_INPUT];
     char *args[MAX_ARGS];
     char *user = getenv("USER"); // user username
 
@@ -19,15 +21,24 @@ int main() {
 
     // welcome message
     printf("\n\nWelcome. Type ex to exit\n");
-    
+
+    linenoiseHistoryLoad("history.txt"); // Load history from file
+    linenoiseHistorySetMaxLen(MAX_INPUT); // Set max history length
+
     while (1) {
 
-        print_prompt(user, hide_path); // prints prompt with username and dir
+        char* prompt = print_prompt(user, hide_path); // prints prompt with username and dir
 
-        if (!fgets(input, sizeof(input), stdin)) break;
-        input[strcspn(input, "\n")] = 0; // removes \n
-        
+        char* input = linenoise(prompt); // read user input with linenoise
+
         string_tolower(input);
+
+        // adds input to history if it's not empty
+        if (input && *input != '\0') {
+            linenoiseHistoryAdd(input);
+        }
+
+        free(prompt); // free allocated memory for prompt        
 
         if (strcmp(input, "ex") == 0) break;
 
@@ -56,7 +67,11 @@ int main() {
             // Error creating the child process
             perror("fork");
         }
+
+        free(input); // free allocated memory for input
     }
+
+    linenoiseHistorySave("history.txt"); // Save history to file on exit
 
     return 0;
 }
