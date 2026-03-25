@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include "commands.h"
 
-#define VERSION "1.0.1"
+#define VERSION "1.0.2"
 #define AUTHOR "Marco"
 
 // function to handle cd built-in command
@@ -19,13 +19,33 @@ void cmd_cd(char **args) {
     }
 }
 
+// method to show myshell version
 void cmd_version (char **argsid) {
     printf("version: %s author: %s\n", VERSION, AUTHOR);
+}
+
+// method to read commands from file and print them on cmd
+void cmd_help (char **args) {
+    FILE *f;
+
+    // checks file opening
+    if ((f = fopen("lib/commands.txt", "r")) == NULL) {
+        printf("Error while opening commands file index\n");
+        return;
+    } else {
+        char line[100];
+        while (fgets(line, sizeof(line), f)) {
+            printf("%s", line);
+        }
+    }
+    puts(""); // \n
+    fclose(f); // closes file
 }
 
 BuiltInCommand builtins[] = {
     {"cd", cmd_cd},
     {"version", cmd_version},
+    {"help", cmd_help},
     {NULL, NULL} // Sentinel
 };
 

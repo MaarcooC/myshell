@@ -1,0 +1,5 @@
+
+HELP CENTER BUILT-IN COMMANDS:
+- help: shows custom commands
+- ex: exit cmd
+- version: shows current myshell version
