@@ -11,5 +11,6 @@ void cmd_cd(char **args);
 void cmd_version(char **args);
 int execute_builtin(char **args);
 void cmd_help (char **args);
+void cmd_update(char **args);
 
 #endif

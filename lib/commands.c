@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include "commands.h"
 
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 #define AUTHOR "Marco"
 
 // function to handle cd built-in command
@@ -42,10 +42,31 @@ void cmd_help (char **args) {
     fclose(f); // closes file
 }
 
+// method to update and upgrade
+void cmd_update(char **args) {
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        execlp("sudo", "sudo", "apt-get", "update", NULL);
+        perror("exec failed");
+    } else {
+        wait(NULL);
+
+        pid = fork();
+        if (pid == 0) {
+            execlp("sudo", "sudo", "apt-get", "upgrade", "-y", NULL);
+            perror("exec failed");
+        } else {
+            wait(NULL);
+        }
+    }
+}
+
 BuiltInCommand builtins[] = {
     {"cd", cmd_cd},
     {"version", cmd_version},
     {"help", cmd_help},
+    {"up", cmd_update},
     {NULL, NULL} // Sentinel
 };
 
