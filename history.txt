@@ -2,8 +2,5 @@ hide
 unhide
 help
 ex
-hello
-help
-cd ..
-cd myshell
+version
 ex

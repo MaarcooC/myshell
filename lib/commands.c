@@ -22,7 +22,7 @@ void cmd_cd(char **args) {
 
 // method to show myshell version
 void cmd_version (char **argsid) {
-    printf("version: %s author: %s\nGITHUB: %s\n", VERSION, AUTHOR, GITHUB);
+    printf("Version: %s Author: %s\nGITHUB: %s\nContributors: %s\n", VERSION, AUTHOR, GITHUB, CONTRIBUTORS);
 }
 
 // method to read commands from file and print them on cmd
