@@ -25,11 +25,15 @@ int main() {
     linenoiseHistoryLoad("lib/text/history.txt"); // Load history from file
     linenoiseHistorySetMaxLen(MAX_INPUT); // Set max history length
 
+    char *input = NULL;
+
     while (1) {
-
+        if(input) free(input);  // it's better to free the memory at the beginning   <---- manages the memory leak of continue 
         char* prompt = print_prompt(user, hide_path); // prints prompt with username and dir
-
-        char* input = linenoise(prompt); // read user input with linenoise
+        
+        input = linenoise(prompt); // read user input with linenoise
+        
+        free(prompt); // free allocated memory for prompt    
 
         string_tolower(input);
 
@@ -38,9 +42,7 @@ int main() {
             linenoiseHistoryAdd(input);
         }
 
-        free(prompt); // free allocated memory for prompt        
-
-        if (strcmp(input, "ex") == 0) break;
+        if (strcmp(input, "ex") == 0) { break; }  // <---- Memory leak
 
         // split input by spaces
         int i = 0;
@@ -51,7 +53,7 @@ int main() {
 
         // Check for built-in commands
         if (execute_builtin(args)) {
-            continue; // Built-in executed, skip fork/exec
+            continue; // Built-in executed, skip fork/exec   // <---- Memory leak
         }
 
         pid_t pid = fork();
@@ -59,7 +61,7 @@ int main() {
             // Child process executes the command
             execvp(args[0], args);
             perror("execvp");  // Print error if execvp() fails
-            exit(1);
+            exit(1); 
         } else if (pid > 0) {
             // Parent process waits for the child
             waitpid(pid, NULL, 0);
@@ -67,10 +69,10 @@ int main() {
             // Error creating the child process
             perror("fork");
         }
-
-        free(input); // free allocated memory for input
     }
 
+    if(input) free(input);  // manages the memory leak of break
+    
     linenoiseHistorySave("history.txt"); // Save history to file on exit
 
     return 0;
