@@ -22,7 +22,7 @@ int main() {
     // welcome message
     printf("\n\nWelcome. Type ex to exit\n");
 
-    linenoiseHistoryLoad("history.txt"); // Load history from file
+    linenoiseHistoryLoad("lib/text/history.txt"); // Load history from file
     linenoiseHistorySetMaxLen(MAX_INPUT); // Set max history length
 
     while (1) {
