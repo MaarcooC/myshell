@@ -73,7 +73,7 @@ int main() {
 
     if(input) free(input);  // manages the memory leak of break
     
-    linenoiseHistorySave("history.txt"); // Save history to file on exit
+    linenoiseHistorySave("lib/text/history.txt"); // Save history to file on exit
 
     return 0;
 }
