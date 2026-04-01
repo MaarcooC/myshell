@@ -2,3 +2,6 @@ hide
 unhide
 help
 ex
+help
+hide
+ex
