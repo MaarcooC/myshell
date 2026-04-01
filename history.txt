@@ -2,5 +2,5 @@ hide
 unhide
 help
 ex
-version
+help
 ex

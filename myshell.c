@@ -28,7 +28,7 @@ int main() {
     char *input = NULL;
 
     while (1) {
-        if(input) free(input);  // it's better to free the memory at the beginning   <---- manages the memory leak of continue 
+        if(input) free(input);  //  manages the memory leak of continue 
         char* prompt = print_prompt(user, hide_path); // prints prompt with username and dir
         
         input = linenoise(prompt); // read user input with linenoise
@@ -42,7 +42,7 @@ int main() {
             linenoiseHistoryAdd(input);
         }
 
-        if (strcmp(input, "ex") == 0) { break; }  // <---- Memory leak
+        if (strcmp(input, "ex") == 0) { break; }  // prevents memory leak
 
         // split input by spaces
         int i = 0;
@@ -53,7 +53,7 @@ int main() {
 
         // Check for built-in commands
         if (execute_builtin(args)) {
-            continue; // Built-in executed, skip fork/exec   // <---- Memory leak
+            continue; // Built-in executed, skip fork/exec
         }
 
         pid_t pid = fork();
@@ -71,7 +71,7 @@ int main() {
         }
     }
 
-    if(input) free(input);  // manages the memory leak of break
+    if(input) free(input);  // manages break memory leak
     
     linenoiseHistorySave("lib/text/history.txt"); // Save history to file on exit
 
