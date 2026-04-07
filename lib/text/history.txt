@@ -5,3 +5,6 @@ ex
 help
 hide
 ex
+apt
+up
+ex
