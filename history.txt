@@ -1,6 +1,0 @@
-hide
-unhide
-help
-ex
-help
-ex
