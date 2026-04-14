@@ -11,3 +11,7 @@ ex
 sudo apt update
 up
 ex
+up
+ex
+up
+ex
