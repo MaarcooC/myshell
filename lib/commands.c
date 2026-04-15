@@ -6,6 +6,10 @@
 #include "commands.h"
 #include "globals.h"
 #include "support.h"
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 extern bool hide_path; // flag to hide path in prompt
 
@@ -79,9 +83,53 @@ BuiltInCommand builtins[] = {
     {"help", cmd_help},
     {"up", cmd_update},
     {"hide", cmd_hide},
-    {"unhide", cmd_unhide}, // unhide is the same as hide, it just sets the flag to false
+    {"unhide", cmd_unhide},
+    {"netstats", cmd_net_stats},
     {NULL, NULL} // Sentinel
 };
+
+// net stats
+void cmd_net_stats (char **args) {
+    struct ifaddrs *ifaddr, *ifa;
+    char addr[NI_MAXHOST], mask[NI_MAXHOST];
+    bool show_mask = (args[1] != NULL && strcmp(args[1], "-m") == 0);
+
+    if (getifaddrs(&ifaddr) == -1) {
+        perror("getifaddrs");
+        return;
+    }
+
+    printf("\n\033[1;36m[ NETWORK INTERFACES ]\033[0m\n");
+        printf("%-10s %-6s %-20s %s\n", "INTERFACE", "TYPE", "IP ADDRESS", show_mask ? "NETMASK" : "");
+        printf("----------------------------------------------------------------------\n");
+
+        for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+            if (!ifa->ifa_addr || (ifa->ifa_addr->sa_family != AF_INET && ifa->ifa_addr->sa_family != AF_INET6)) 
+                continue;
+
+            int family = ifa->ifa_addr->sa_family;
+            getnameinfo(ifa->ifa_addr, (family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                        addr, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+
+            printf("%-10s %-6s %-20s", ifa->ifa_name, (family == AF_INET) ? "IPv4" : "IPv6", addr);
+            
+            if (show_mask && ifa->ifa_netmask) {
+                getnameinfo(ifa->ifa_netmask, (family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                            mask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+                printf(" %s", mask);
+            }
+            printf("\n");
+        }
+        freeifaddrs(ifaddr);
+
+    printf("----------------------------------------------------------------------\n");
+
+    print_net_traffic(); // Print traffic statistics
+    printf("----------------------------------------------------------------------\n");
+    check_connectivity(); // Check connectivity to Google
+    printf("----------------------------------------------------------------------\n");
+    print_active_connections();
+}
 
 // Function to check and execute built-in commands
 int execute_builtin(char **args) {

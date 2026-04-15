@@ -1,5 +1,6 @@
 help        Show this help message
 exit        Exit the shell
+netstats    Shows network stats, use '-m' to show network mask
 version     Show version and author information
 up          Run system update and upgrade
 hide        Hide current directory in prompt

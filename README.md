@@ -20,8 +20,8 @@ MyShell is a custom, lightweight shell environment built in C, specifically desi
 
 | Command | Action | Description |
 | :--- | :--- | :--- |
-| `cd <path>` | **Change Directory** | Navigates to the specified folder. |
 | `up` | **Auto Update** | Chains `sudo apt update` and `upgrade -y`. |
+| `netstat [-m]` | **Network statistics** | Shows network statistics, use `-m` to show network mask |
 | `hide` | **Minimalist Mode** | Hides the current path from the prompt. |
 | `unhide` | **Standard Mode** | Restores the path visibility in the prompt. |
 | `help` | **Manual** | Lists all available commands from the help file. |
