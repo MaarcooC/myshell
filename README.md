@@ -38,7 +38,7 @@ You will need a C compiler (like `gcc`) and standard Linux headers.
 ### Compilation
 Run the following command in your terminal:
 ```bash
-gcc main.c lib/commands.c lib/support.c lib/linenoise.c -I./lib -o myshell 
+make
 ```
 ```bash
 ./myshell
