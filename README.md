@@ -20,14 +20,15 @@ MyShell is a custom, lightweight shell environment built in C, specifically desi
 
 | Command | Action | Description |
 | :--- | :--- | :--- |
+| `ex` | **Exit** | Safely closes the shell and saves history. |
+| `help` | **Manual** | Lists all available commands from the help file. |
 | `up` | **Auto Update** | Chains `sudo apt update` and `upgrade -y`. |
-| `netstat [-m]` | **Network statistics** | Shows network statistics, use `-m` to show network mask |
 | `hide` | **Minimalist Mode** | Hides the current path from the prompt. |
 | `unhide` | **Standard Mode** | Restores the path visibility in the prompt. |
-| `help` | **Manual** | Lists all available commands from the help file. |
 | `version` | **Info** | Displays version, author, and GitHub info. |
-| `ex` | **Exit** | Safely closes the shell and saves history. |
+| `netstat [-m]` | **Network statistics** | Shows network statistics, use `-m` to show network mask |
 | `speedtest` | **Speedtest** | Test internet download speed and bandwidth. |
+| `sysinfo` | **System info** | TDisplay system information and status in a box. |
 
 ---
 

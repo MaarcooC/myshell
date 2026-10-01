@@ -16,6 +16,7 @@ void cmd_hide (char **args);
 void cmd_unhide (char **args);
 void cmd_net_stats (char **args);
 void cmd_speedtest (char **args);
+void cmd_sysinfo(char **args);
 
 BuiltInCommand builtins[] = {
     {"cd", cmd_cd},
@@ -26,6 +27,7 @@ BuiltInCommand builtins[] = {
     {"unhide", cmd_unhide},
     {"netstats", cmd_net_stats},
     {"speedtest", cmd_speedtest},
+    {"sysinfo", cmd_sysinfo},
     {NULL, NULL} // Sentinel
 };
 

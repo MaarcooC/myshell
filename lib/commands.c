@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <curl/curl.h>
+#include <sys/utsname.h>
+#include <sys/sysinfo.h>
 
 extern bool hide_path; // flag to hide path in prompt
 
@@ -201,4 +203,66 @@ void cmd_speedtest(char **args) {
         printf("\033[1;31mFailed to initialize libcurl.\033[0m\n");
     }
     printf("----------------------------------------------------------------------\n");
+}
+
+// system info
+void cmd_sysinfo(char **args) {
+    struct utsname uname_data;
+    struct sysinfo sys_data;
+    char cpu_model[64] = "Unknown CPU";
+    int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+
+    // 1. Get OS and Kernel Info
+    if (uname(&uname_data) != 0) {
+        perror("uname");
+        return;
+    }
+
+    // 2. Get Uptime and RAM Info
+    if (sysinfo(&sys_data) != 0) {
+        perror("sysinfo");
+        return;
+    }
+
+    // 3. Read CPU Model Name from /proc/cpuinfo
+    FILE *fp = fopen("/proc/cpuinfo", "r");
+    if (fp) {
+        char line[256];
+        while (fgets(line, sizeof(line), fp)) {
+            if (strncmp(line, "model name", 10) == 0) {
+                char *colon = strchr(line, ':');
+                if (colon) {
+                    colon++;
+                    while (*colon == ' ') colon++;
+                    
+                    strncpy(cpu_model, colon, sizeof(cpu_model) - 1);
+                    cpu_model[sizeof(cpu_model) - 1] = '\0';
+                    cpu_model[strcspn(cpu_model, "\r\n")] = 0;
+                    break;
+                }
+            }
+        }
+        fclose(fp);
+    }
+
+    // Calculate RAM values in Gigabytes
+    double total_ram_gb = (double)sys_data.totalram * sys_data.mem_unit / (1024.0 * 1024.0 * 1024.0);
+    double free_ram_gb  = (double)sys_data.freeram  * sys_data.mem_unit / (1024.0 * 1024.0 * 1024.0);
+    double used_ram_gb  = total_ram_gb - free_ram_gb;
+
+    // Convert Uptime (seconds) to hours and minutes
+    long uptime_sec = sys_data.uptime;
+    long hours = uptime_sec / 3600;
+    long minutes = (uptime_sec % 3600) / 60;
+
+    // 4. Print Simple Clean Output
+    printf("\n\033[1;36m[ SYSTEM INFORMATION ]\033[0m\n");
+    printf("  \033[1;33m%-8s\033[0m : %s\n", "OS", uname_data.sysname);
+    printf("  \033[1;33m%-8s\033[0m : %s\n", "Kernel", uname_data.release);
+    printf("  \033[1;33m%-8s\033[0m : %s\n", "CPU", cpu_model);
+    printf("  \033[1;33m%-8s\033[0m : %d cores\n", "Cores", num_cores);
+    printf("  \033[1;33m%-8s\033[0m : %.1f / %.1f GB\n", "RAM", used_ram_gb, total_ram_gb);
+    printf("  \033[1;33m%-8s\033[0m : %ldh %ldm\n", "Uptime", hours, minutes);
+    printf("  \033[1;33m%-8s\033[0m : MyShell %s\n", "Shell", VERSION);
+    printf("----------------------------------------------------------------------\n\n");
 }
