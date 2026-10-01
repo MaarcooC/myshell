@@ -1,6 +1,7 @@
 # Compiler
 CC = gcc
 CFLAGS = -Wall -g
+LDFLAGS = -lcurl
 
 # Source files
 # myshell.c + every .c file
@@ -13,7 +14,7 @@ all: $(TARGET)
 
 # Link object files to create executable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 # Compile .c to .o
 %.o: %.c

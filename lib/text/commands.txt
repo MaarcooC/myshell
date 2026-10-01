@@ -5,3 +5,4 @@ version     Show version and author information
 up          Run system update and upgrade
 hide        Hide current directory in prompt
 unhide      Show current directory in prompt
+speedtest   Test internet download speed and bandwidth

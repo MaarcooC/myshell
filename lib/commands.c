@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <curl/curl.h>
 
 extern bool hide_path; // flag to hide path in prompt
 
@@ -26,7 +27,7 @@ void cmd_cd(char **args) {
 
 // method to show myshell version
 void cmd_version (char **argsid) {
-    printf("Version: %s Author: %s\nGITHUB: %s\nContributors: %s\n", VERSION, AUTHOR, GITHUB, CONTRIBUTORS);
+    printf("Version: %s\nBuild: %s\nAuthor: %s\nGITHUB: %s\nContributors: %s\n", VERSION, BUILD, AUTHOR, GITHUB, CONTRIBUTORS);
 }
 
 // method to read commands from file and print them on cmd
@@ -76,17 +77,6 @@ void cmd_hide (char **args) {
 void cmd_unhide (char **args) {
     hide_path = false;
 }
-
-BuiltInCommand builtins[] = {
-    {"cd", cmd_cd},
-    {"version", cmd_version},
-    {"help", cmd_help},
-    {"up", cmd_update},
-    {"hide", cmd_hide},
-    {"unhide", cmd_unhide},
-    {"netstats", cmd_net_stats},
-    {NULL, NULL} // Sentinel
-};
 
 // net stats
 void cmd_net_stats (char **args) {
@@ -141,4 +131,74 @@ int execute_builtin(char **args) {
         }
     }
     return 0; // Not a built-in
+}
+
+// Callback to trash recieved data
+static size_t write_trash(void *ptr, size_t size, size_t nmemb, void *stream) {
+    return size * nmemb; // fakes saving data
+}
+
+// speedtest
+void cmd_speedtest(char **args) {
+    CURL *curl;
+    CURLcode res;
+
+    // List of test payload URLs (10MB/25MB) with fallbacks
+    const char *test_urls[] = {
+        "https://speed.hetzner.de/10MB.bin",
+        "https://proof.ovh.net/files/10Mb.dat",
+        "http://speedtest.tele2.net/10MB.zip"
+    };
+    int num_urls = sizeof(test_urls) / sizeof(test_urls[0]);
+
+    printf("\n\033[1;36m[ SPEEDTEST IN PROGRESS... ]\033[0m\n");
+    printf("  Testing connection speed...\n");
+    fflush(stdout);
+
+    curl = curl_easy_init();
+    if (curl) {
+        int success = 0;
+
+        for (int i = 0; i < num_urls; i++) {
+            // Configure cURL options
+            curl_easy_setopt(curl, CURLOPT_URL, test_urls[i]);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_trash);
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);             // Disable raw cURL text table
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);               // Maximum timeout 15s
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);          // Fast fail on connection/DNS
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (myshell-speedtest)");
+
+            res = curl_easy_perform(curl);
+
+            if (res == CURLE_OK) {
+                curl_off_t download_speed_bytes = 0;
+                double total_time = 0;
+
+                curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD_T, &download_speed_bytes);
+                curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
+
+                double speed_mbps = ((double)download_speed_bytes * 8.0) / 1000000.0;
+                double speed_mbs  = (double)download_speed_bytes / 1048576.0;
+
+                printf("\n\033[1;32m[ SPEEDTEST RESULTS ]\033[0m\n");
+                printf("  Server:         %s\n", test_urls[i]);
+                printf("  Download Speed: \033[1;33m%.2f Mbps\033[0m (%.2f MB/s)\n", speed_mbps, speed_mbs);
+                printf("  Time Elapsed:   %.2f seconds\n", total_time);
+
+                success = 1;
+                break; // Exit loop on first successful download
+            }
+        }
+
+        if (!success) {
+            printf("\n\033[1;31m[ ERROR ]\033[0m Speedtest failed: Unable to resolve or reach test servers.\n");
+            printf("  Please check your internet connection or DNS settings.\n");
+        }
+
+        curl_easy_cleanup(curl);
+    } else {
+        printf("\033[1;31mFailed to initialize libcurl.\033[0m\n");
+    }
+    printf("----------------------------------------------------------------------\n");
 }

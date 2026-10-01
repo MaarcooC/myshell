@@ -15,5 +15,18 @@ void cmd_update(char **args);
 void cmd_hide (char **args);
 void cmd_unhide (char **args);
 void cmd_net_stats (char **args);
+void cmd_speedtest (char **args);
+
+BuiltInCommand builtins[] = {
+    {"cd", cmd_cd},
+    {"version", cmd_version},
+    {"help", cmd_help},
+    {"up", cmd_update},
+    {"hide", cmd_hide},
+    {"unhide", cmd_unhide},
+    {"netstats", cmd_net_stats},
+    {"speedtest", cmd_speedtest},
+    {NULL, NULL} // Sentinel
+};
 
 #endif
