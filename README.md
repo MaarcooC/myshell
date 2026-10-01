@@ -27,13 +27,22 @@ MyShell is a custom, lightweight shell environment built in C, specifically desi
 | `help` | **Manual** | Lists all available commands from the help file. |
 | `version` | **Info** | Displays version, author, and GitHub info. |
 | `ex` | **Exit** | Safely closes the shell and saves history. |
+| `speedtest` | **Speedtest** | Test internet download speed and bandwidth. |
 
 ---
 
 ## 📥 Installation & Setup
 
 ### Prerequisites
-You will need a C compiler (like `gcc`) and standard Linux headers.
+You will need a C compiler (like `gcc`), standard Linux headers, and `libcurl` for network features (e.g., speedtest).
+
+#### Installing Dependencies
+
+On **Debian / Ubuntu / Linux Mint**:
+```bash
+sudo apt update
+sudo apt install gcc make libcurl4-openssl-dev
+```
 
 ### Compilation
 Run the following command in your terminal:
