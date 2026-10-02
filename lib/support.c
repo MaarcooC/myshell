@@ -45,13 +45,19 @@ char* print_prompt(char* user, bool hide_path) {
         exit(1);
     }
 
-    snprintf(prompt, MAX_INPUT, "[%s@myshell", user);
+    // [user@myshell] interamente in rosso grassetto
+    snprintf(prompt, MAX_INPUT, "[\033[1;31m%s@myshell\033[0m", user);
+
     char cwd[MAX_INPUT];
 
     // Get the current working directory and print it in the prompt
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        if (hide_path) strcat(prompt, "]# ");
-        else snprintf(prompt + strlen(prompt), MAX_INPUT - strlen(prompt), " ~%s]# ", cwd);
+        if (hide_path) {
+            strcat(prompt, "]# ");
+        } else {
+            // path in blu grassetto
+            snprintf(prompt + strlen(prompt), MAX_INPUT - strlen(prompt), " ~\033[1;34m%s\033[0m]# ", cwd);
+        }
     } else {
         perror("getcwd() error");
     }
