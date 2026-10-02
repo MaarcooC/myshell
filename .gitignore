@@ -1,3 +1,6 @@
 lib/text/history.txt
 myshell
 myshell.o
+lib/commands.o
+lib/linenoise.o
+lib/support.o
