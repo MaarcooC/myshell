@@ -3,18 +3,18 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include "lib/commands.h"
 #include "lib/support.h"
 #include "lib/globals.h"
 #include "lib/linenoise.h"
-#include <unistd.h>
-#include <termios.h>
 
 bool hide_path = false; // flag to hide path in prompt
 
 int main() {
     char *args[MAX_ARGS];
     char *user = getenv("USER"); // user username
+    if (!user) user = "user";
 
     // prints f1 car in terminal
     printF1();
@@ -28,28 +28,45 @@ int main() {
     char *input = NULL;
 
     while (1) {
-        if(input) free(input);  //  manages the memory leak of continue 
-        char* prompt = print_prompt(user, hide_path); // prints prompt with username and dir
-        
-        input = linenoise(prompt); // read user input with linenoise
-        
-        free(prompt); // free allocated memory for prompt    
-
-        string_tolower(input);
-
-        // adds input to history if it's not empty
-        if (input && *input != '\0') {
-            linenoiseHistoryAdd(input);
+        if (input) {
+            free(input);  // manages the memory leak of previous iterations
+            input = NULL;
         }
 
-        if (strcmp(input, "ex") == 0) { break; }  // prevents memory leak
+        char* prompt = print_prompt(user, hide_path); // prints prompt with username and dir
+        input = linenoise(prompt); // read user input with linenoise
+        free(prompt); // free allocated memory for prompt    
 
-        // split input by spaces
+        // Handle Ctrl+D (EOF) or NULL input
+        if (input == NULL) {
+            printf("\nExiting...\n");
+            break;
+        }
+
+        // If user just pressed Enter (empty input), skip processing
+        if (input[0] == '\0') {
+            continue;
+        }
+
+        // Adds input to history if it's not empty
+        linenoiseHistoryAdd(input);
+
+        if (strcmp(input, "ex") == 0) { break; }
+
+        // Split input by space, tab, carriage return, and newline
         int i = 0;
-        args[i] = strtok(input, " ");
-        while (args[i] && i < MAX_ARGS - 1)
-            args[++i] = strtok(NULL, " ");
+        args[i] = strtok(input, " \t\r\n");
+        while (args[i] && i < MAX_ARGS - 1) {
+            args[++i] = strtok(NULL, " \t\r\n");
+        }
         args[i] = NULL;
+
+        // If no arguments were parsed, skip execution
+        if (args[0] == NULL) {
+            continue;
+        }
+
+        string_tolower(args[0]);
 
         // Check for built-in commands
         if (execute_builtin(args)) {
@@ -71,7 +88,7 @@ int main() {
         }
     }
 
-    if(input) free(input);  // manages break memory leak
+    if (input) free(input);  // manages break memory leak
     
     linenoiseHistorySave("lib/text/history.txt"); // Save history to file on exit
 

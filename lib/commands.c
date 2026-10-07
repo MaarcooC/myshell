@@ -16,11 +16,31 @@
 
 extern bool hide_path; // flag to hide path in prompt
 
+BuiltInCommand builtins[] = {
+    {"cd", cmd_cd},
+    {"version", cmd_version},
+    {"help", cmd_help},
+    {"up", cmd_update},
+    {"hide", cmd_hide},
+    {"unhide", cmd_unhide},
+    {"netstats", cmd_net_stats},
+    {"speedtest", cmd_speedtest},
+    {"sysinfo", cmd_sysinfo},
+    {NULL, NULL} // Sentinel
+};
+
 // function to handle cd built-in command
 void cmd_cd(char **args) {
     if (args[1] == NULL) {
-        fprintf(stderr, "cd: missing argument\n");
+        // go to home if only "cd" os typed
+        char *home = getenv("HOME");
+        if (home != NULL) {
+            chdir(home);
+        } else {
+            fprintf(stderr, "cd: HOME environment variable not set\n");
+        }
     } else {
+        // go to path if provided
         if (chdir(args[1]) != 0) {
             perror("cd");
         }
